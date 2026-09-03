@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pdomkub's System Status :3</title>
+</head>
+<body>
+    <title>pdomkub's System Status :3</title>
+    <h1>pdomkub's System Status :3</h1>
+    <p>Welcome to pdomkub's system status page! Here you can find information about the current status of various services.</p>
+    <h2>Service Status</h2>
+    <ul id="services-list">
+        <li>Loading services...</li>
+    </ul>
+    <h2>Contact Information</h2>
+    <p>If you have any questions or concerns regarding the system status, please contact us at <a href="mailto:paimoncat@hotmail.com?subject=Regarding%20System%20Status%20Information">paimoncat@hotmail.com</a>(NOT OFFICIAL, JUST A PLACEHOLDER. EMAIL MIGHT NOT GET READ).</p>
+    <p>Last Updated: <span id="last-updated"></span></p>
+    <script>
+        function getStatusColor(status) {
+            return status === 'operational' ? 'green' : 'red';
+        }
+
+        function getStatusText(status) {
+            return status === 'operational' ? 'Operational' : 'Down';
+        }
+
+        async function loadServices() {
+            try {
+                const response = await fetch('/api/services');
+                const data = await response.json();
+                
+                document.getElementById('last-updated').textContent = new Date(data.timestamp).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                const servicesList = document.getElementById('services-list');
+                servicesList.innerHTML = '';
+                
+                data.services.forEach(service => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `${service.name}: <span style="color: ${getStatusColor(service.status)};">${getStatusText(service.status)}</span>`;
+                    servicesList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error loading services:', error);
+                document.getElementById('services-list').innerHTML = '<li>Error loading services</li>';
+            }
+        }
+
+        loadServices();
+        setInterval(loadServices, 30000);
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #48474723;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        span {
+            font-weight: bold;
+        }
+        a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <p>Copyright © 2026 pdomkub and his viewers. Licensed under the MIT License.</p>
+</body>
+</html>
