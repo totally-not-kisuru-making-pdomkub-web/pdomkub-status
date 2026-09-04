@@ -7,7 +7,8 @@ const homepage = readFileSync(join(import.meta.dir, "web/index.html"), "utf-8");
 
 const services = [
   { name: "Minecraft Server", host: "play.pdomkub.com", port: 19132, type: "game" },
-  { name: "Management Panel", url: "http://play.pdomkub.com:8080", type: "http", useHead: true },
+  { name: "Advanced Management Panel", url: "http://play.pdomkub.com:8080", type: "http", useHead: true },
+  { name: "Simple Management Portal", url: "http://admin.pdomkub.com", type: "http", useHead: false },
   { name: "Social", url: "http://pdomkub.com", type: "http" },
 ];
 
