@@ -1,5 +1,4 @@
 import homepage from "./web/index.html";
-import favicon from "./web/favicon.png";
 
 type ServiceStatus = "operational" | "down";
 
@@ -72,7 +71,7 @@ const worker: ExportedHandler = {
     }
 
     if (url.pathname === "/favicon.png") {
-      return new Response(favicon, {
+      return new Response("./web/favicon.png", {
         headers: { "Content-Type": "image/png" },
       });
     }
