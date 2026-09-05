@@ -1,6 +1,8 @@
 import homepage from "./web/index.html";
 import favicon from "./web/favicon.png";
 
+const BASE_PATH = "/pdomkub";
+
 type ServiceStatus = "operational" | "down";
 
 type HttpService = {
@@ -61,23 +63,37 @@ async function checkService(service: Service): Promise<ServiceStatus> {
   return checkHttpService(service);
 }
 
+function normalizeRequestPath(pathname: string): { pathname: string; isBasePathRequest: boolean } {
+  if (pathname === BASE_PATH) {
+    return { pathname: "/", isBasePathRequest: true };
+  }
+
+  if (pathname.startsWith(`${BASE_PATH}/`)) {
+    return { pathname: pathname.slice(BASE_PATH.length) || "/", isBasePathRequest: true };
+  }
+
+  return { pathname, isBasePathRequest: false };
+}
+
 const worker: ExportedHandler = {
   async fetch(request) {
     const url = new URL(request.url);
+    const normalized = normalizeRequestPath(url.pathname);
+    const pathname = normalized.pathname;
 
-    if (url.pathname === "/") {
+    if (pathname === "/") {
       return new Response(homepage, {
         headers: { "Content-Type": "text/html; charset=utf-8" },
       });
     }
 
-    if (url.pathname === "/favicon.png") {
+    if (pathname === "/favicon.png") {
       return new Response(favicon, {
         headers: { "Content-Type": "image/png" },
       });
     }
 
-    if (url.pathname === "/api/services") {
+    if (pathname === "/api/services") {
       const statuses = await Promise.all(
         services.map(async (service) => ({
           name: service.name,
@@ -88,6 +104,12 @@ const worker: ExportedHandler = {
       return Response.json({
         services: statuses,
         timestamp: new Date().toISOString(),
+      });
+    }
+
+    if (normalized.isBasePathRequest && !pathname.startsWith("/api/")) {
+      return new Response(homepage, {
+        headers: { "Content-Type": "text/html; charset=utf-8" },
       });
     }
 
