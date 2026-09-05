@@ -26,9 +26,17 @@
             return status === 'operational' ? 'Operational' : 'Down';
         }
 
+        function getApiBasePath(pathname) {
+            if (pathname === '/pdomkub' || pathname.startsWith('/pdomkub/')) {
+                return '/pdomkub';
+            }
+            return '';
+        }
+
         async function loadServices() {
             try {
-                const response = await fetch('/api/services');
+                const basePath = getApiBasePath(window.location.pathname);
+                const response = await fetch(`${basePath}/api/services`);
                 const data = await response.json();
                 
                 document.getElementById('last-updated').textContent = new Date(data.timestamp).toLocaleDateString('en-US', {
